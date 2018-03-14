@@ -1,12 +1,15 @@
 -module(tarry).
+
 -export([main/0]).
 
-main() ->
+readInput(Lines) ->
   case io:get_line("") of
-    eof  -> ok;
-    Line ->
-      % This leaks memory so don't run it with a lot of data
-      % tail recursive my arse... 🙄
-      io:fwrite(Line),
-      main()
+    eof -> lists:reverse(Lines);
+    Text ->
+      Tokens = string:tokens(Text, " \n"),
+      readInput([Tokens | Lines])
   end.
+
+main() ->
+  Out = readInput([]),
+  io:format("~p~n", [Out]).
