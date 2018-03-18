@@ -32,19 +32,19 @@ spawnNodes([Initiator | Tail]) ->
     % Get a list of {PID, Neighbour-PID-list} tuples, giving a list of nodes that are neighbours for each node
     NeighbourIDs = [getNeighbours(N, NodeIDs)|| N <- lists:zip(NodeIDs, Neighbours)],
     % Still need to do something with this
-    [Pid ! NeighbourPids || {Pid, NeighbourPids} <- NeighbourIDs],
+    [Pid ! NeighbourPids || {{_, Pid}, NeighbourPids} <- NeighbourIDs],
     % Need to work out how to handle that though
     io:format("Initiating Tarry with ~p~n", [Initiator]).
 
-getNeighbours({{_, PID}, NeighboursForOne}, NodeIDs) ->
+getNeighbours({{Name, PID}, NeighboursForOne}, NodeIDs) ->
     % Function to get the PID for a node
-    FuncMap = fun(Node) -> element(2, lists:keyfind([Node], 1, NodeIDs)) end,
+    FuncMap = fun(Node) -> lists:keyfind([Node], 1, NodeIDs) end,
     % Return a tuple of the PID and the PIDs of its neighbours
-    {PID, lists:map(FuncMap, NeighboursForOne)}.
+    {{Name, PID}, lists:map(FuncMap, NeighboursForOne)}.
 
 handleSpawned(Node) ->
     io:format("Node ~s with pid ~p spawned~n", [Node, self()]),
     receive
-        Neighbours -> io:format("~p has neighbours ~p~n", [Node, Neighbours])
+        Neighbours -> io:format("Node ~s has neighbours ~p~n", [Node, Neighbours])
     end.
 
