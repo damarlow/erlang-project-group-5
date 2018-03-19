@@ -22,9 +22,9 @@ main() ->
 spawnNodes([Initiator | Tail]) ->
     % Tail is the list to build graph from, Initiator is the node to start Tarry with
     % Use a list composition to get the name of each node (i.e. first elem of each sublist)
-    NodeNames = [lists:sublist(Node, 1, 1) || Node <- Tail],
+    NodeNames = [[lists:nth(1, Node)] || Node <- Tail],
     % The neighbours of each are the rest of the elements of each sublist
-    Neighbours = [lists:reverse(lists:droplast(lists:reverse(SubList)))|| SubList <- Tail],
+    Neighbours = [tl(SubList) || SubList <- Tail],
     % This spawns nodes and keeps Pids
     Pids = [spawn(tarry, handleSpawned, [Name]) || Name <- NodeNames],
     % Zip the Pids together with corresponding nodes
