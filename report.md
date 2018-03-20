@@ -10,12 +10,20 @@ David Marlow | 1416386
 
 ## Compile
 ```bash
-erlc tarry.erl
+erlc src/tarry.erl
+```
+OR
+```bash
+make
 ```
 
 ## Run
 ```bash
 erl -run tarry main -s init stop -noshell
+```
+OR
+```
+make run < inputfile
 ```
 
 ## Sample Output
