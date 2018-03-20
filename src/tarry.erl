@@ -60,3 +60,5 @@ doTarry(Node, Neighbours) ->
     receive
         Msg -> io:format("Node ~p received message ~p~n", [Node, Msg])
     end.
+
+% vim: et sw=2
