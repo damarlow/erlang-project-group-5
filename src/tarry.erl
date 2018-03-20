@@ -68,7 +68,11 @@ doTarry(Name, Neighbours, OldParent) ->
       % Unvisited nodes are neighbours that haven't been visited already
       Unvisited = lists:subtract(Neighbours, Visited),
       % Next node is the next unvisited neighbour, otherwise the parent
-      Next = case Unvisited of [] -> hd(Parent); _ -> hd(Unvisited) end,
+      Next = case Unvisited of 
+               [] -> hd(Parent);
+               % Change the followng to '_ -> hd(Unvisited)' for determinism
+               _  -> lists:nth(rand:uniform(length(Unvisited)), Unvisited)
+             end,
       Self = { Name, self() },
       % Pass on the token to the next element
       element(2, Next) ! { Self, [ Self | Visited ] },
