@@ -20,7 +20,7 @@ erl -run tarry main -s init stop -noshell
 
 ## Sample Output
 ```text
-Output here
+p q s t r t u t s q p
 ```
 
 ## Accomplished
