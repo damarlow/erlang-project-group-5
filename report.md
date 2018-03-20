@@ -35,4 +35,6 @@ p q s t r t u t s q p
 Assignment fully completed and correct.
 
 ## Discretionary Mark Notes
-Insert cool thing we did here.
+We've included a makefile that runs input from input.txt,
+Added randomness to selecting which path to take,
+Well-commented code.
