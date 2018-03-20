@@ -44,6 +44,11 @@ getNeighbours({{Name, PID}, NeighboursForOne}, NodeIDs) ->
 handleSpawned(Node) ->
   io:format("Node ~s with pid ~p spawned~n", [Node, self()]),
   receive
-    Neighbours -> io:format("Node ~s has neighbours ~p~n", [Node, Neighbours])
+    Neighbours -> doTarry(Node, Neighbours)
   end.
 
+doTarry(Node, Neighbours) ->
+    io:format("Node ~s has neighbours ~p~n", [Node, Neighbours]),
+    receive
+        Msg -> io:format("Node ~p received message ~p~n", [Node, Msg])
+    end.
