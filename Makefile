@@ -10,8 +10,6 @@ ERLCFLAGS   = -v -W2 -Werror
 ERL         = erl
 ERLFLAGS    = -s init stop -noshell
 MODULE      = tarry
-MAIN        = start
-
 # =================
 
 .PHONY: default all $(MODULE)
@@ -27,7 +25,7 @@ $(OBJDIR):
 
 .PHONY: run
 run: $(MODULE)
-	$(ERL) -pa $(OBJDIR) -run $(MODULE) $(MAIN) $(ERLFLAGS)
+	$(ERL) -pa $(OBJDIR) -run $(MODULE) $(ERLFLAGS)
 
 .PHONY: clean
 clean:
