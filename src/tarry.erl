@@ -22,9 +22,9 @@ start() ->
   % Get the PID of the initial node
   InitialPid = element(2, Initial),
   % Send the first message!
-  InitialPid ! { {"main", self()}, [] },
+  InitialPid ! {{"main", self()}, []},
   receive
-    { _, List } ->
+    {_, List} ->
       Names = lists:map(fun(X) -> element(1, X) end, List),
       String = lists:join(" ", lists:reverse(Names)),
       io:format("~s~n", [String])
@@ -62,20 +62,20 @@ handleSpawned(Node) ->
 doTarry(Name, Neighbours, OldParent) ->
   receive
     % Empty list signifies that we are the initiator
-    { Sender, Visited } ->
+    {Sender, Visited} ->
       % Assign parent to the Sender if we don't have one
       Parent = case OldParent of [] -> [Sender]; _ -> OldParent end,
       % Unvisited nodes are neighbours that haven't been visited already
       Unvisited = lists:subtract(Neighbours, Visited),
       % Next node is the next unvisited neighbour, otherwise the parent
-      Next = case Unvisited of 
+      Next = case Unvisited of
                [] -> hd(Parent);
-               % Change the followng to '_ -> hd(Unvisited)' for determinism
-               _  -> lists:nth(rand:uniform(length(Unvisited)), Unvisited)
+               % Change the following to '_ -> hd(Unvisited)' for determinism
+               _ -> lists:nth(rand:uniform(length(Unvisited)), Unvisited)
              end,
-      Self = { Name, self() },
+      Self = {Name, self()},
       % Pass on the token to the next element
-      element(2, Next) ! { Self, [ Self | Visited ] },
+      element(2, Next) ! {Self, [Self | Visited]},
       doTarry(Name, Neighbours, Parent)
   end.
 
