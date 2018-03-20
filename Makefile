@@ -27,6 +27,10 @@ $(OBJDIR):
 run: $(MODULE)
 	$(ERL) -pa $(OBJDIR) -run $(MODULE) $(ERLFLAGS)
 
+.PHONY: test
+test: $(MODULE)
+	@$(MAKE) run < input.txt
+
 .PHONY: clean
 clean:
 	$(RM) -r $(OBJDIR)
