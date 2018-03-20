@@ -3,7 +3,7 @@
 ## Group 5
 Name | Student ID
 --- | ---
-Rowan Cole | ???????
+Rowan Cole | 1411131
 Joseph Groocock | 1467414
 Christopher Lane | 1435876
 David Marlow | 1416386
@@ -24,7 +24,7 @@ Output here
 ```
 
 ## Accomplished
-Hopefully "Assignment fully completed and correct".
+Assignment fully completed and correct.
 
 ## Discretionary Mark Notes
 Insert cool thing we did here.
