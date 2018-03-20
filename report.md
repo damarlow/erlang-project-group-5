@@ -19,7 +19,7 @@ make
 
 ## Run
 ```bash
-erl -run tarry main -s init stop -noshell
+erl -run tarry -s init stop -noshell
 ```
 OR
 ```
