@@ -10,7 +10,7 @@ ERLCFLAGS   = -v -W2 -Werror
 ERL         = erl
 ERLFLAGS    = -s init stop -noshell
 MODULE      = tarry
-MAIN        = main
+MAIN        = start
 
 # =================
 

@@ -1,6 +1,6 @@
 -module(tarry).
 
--export([main/0, handleSpawned/1, getNeighbours/2]).
+-export([start/0, handleSpawned/1]).
 
 readInput(Lines) ->
   case io:get_line("") of
@@ -13,34 +13,39 @@ readInput(Lines) ->
       readInput([Nodes | Lines])
   end.
 
-main() ->
+start() ->
   Out = readInput([]),
   % Spawn the nodes from the output
-  Nodes = spawnNodes(Out),
+  Nodes = spawnNodes(tl(Out)),
   % Find the initial node from the first input line
   Initial = lists:keyfind(hd(Out), 1, Nodes),
-  io:format("Initial node is ~p~n", [Initial]),
   % Get the PID of the initial node
   InitialPid = element(2, Initial),
   % Send the first message!
-  InitialPid ! "Test".
+  InitialPid ! { {"main", self()}, [] },
+  receive
+    { _, List } ->
+      Names = lists:map(fun(X) -> element(1, X) end, List),
+      String = lists:join(" ", lists:reverse(Names)),
+      io:format("~s~n", [String])
+  end.
 
-spawnNodes([Initiator | Tail]) ->
-  % Tail is the list to build graph from, Initiator is the node to start Tarry with
+spawnNodes(List) ->
+  % List is the list to build graph from, Initiator is the node to start Tarry with
   % Use a list composition to get the name of each node (i.e. first elem of each sublist)
-  NodeNames = [[lists:nth(1, Node)] || Node <- Tail],
+  NodeNames = [[lists:nth(1, Node)] || Node <- List],
   % The neighbours of each are the rest of the elements of each sublist
-  Neighbours = [tl(SubList) || SubList <- Tail],
+  Neighbours = [tl(SubList) || SubList <- List],
   % This spawns nodes and keeps Pids
   Pids = [spawn(tarry, handleSpawned, [Name]) || Name <- NodeNames],
   % Zip the Pids together with corresponding nodes
   NodeIDs = lists:zip(NodeNames, Pids),
-  % Get a list of {PID, Neighbour-PID-list} tuples, giving a list of nodes that are neighbours for each node
+  % Get a list of {PID, Neighbour-PID-list} tuples
+  % giving a list of nodes that are neighbours for each node
   NeighbourIDs = [getNeighbours(N, NodeIDs) || N <- lists:zip(NodeIDs, Neighbours)],
   % Still need to do something with this
   [Pid ! NeighbourPids || {{_, Pid}, NeighbourPids} <- NeighbourIDs],
   % Need to work out how to handle that though
-  io:format("Initiating Tarry with ~p~n", [Initiator]),
   NodeIDs.
 
 getNeighbours({{Name, PID}, NeighboursForOne}, NodeIDs) ->
@@ -50,15 +55,24 @@ getNeighbours({{Name, PID}, NeighboursForOne}, NodeIDs) ->
   {{Name, PID}, lists:map(FuncMap, NeighboursForOne)}.
 
 handleSpawned(Node) ->
-  io:format("Node ~s with pid ~p spawned~n", [Node, self()]),
   receive
-    Neighbours -> doTarry(Node, Neighbours)
+    Neighbours -> doTarry(Node, Neighbours, [])
   end.
 
-doTarry(Node, Neighbours) ->
-    io:format("Node ~s has neighbours ~p~n", [Node, Neighbours]),
-    receive
-        Msg -> io:format("Node ~p received message ~p~n", [Node, Msg])
-    end.
+doTarry(Name, Neighbours, OldParent) ->
+  receive
+    % Empty list signifies that we are the initiator
+    { Sender, Visited } ->
+      % Assign parent to the Sender if we don't have one
+      Parent = case OldParent of [] -> [Sender]; _ -> OldParent end,
+      % Unvisited nodes are neighbours that haven't been visited already
+      Unvisited = lists:subtract(Neighbours, Visited),
+      % Next node is the next unvisited neighbour, otherwise the parent
+      Next = case Unvisited of [] -> hd(Parent); _ -> hd(Unvisited) end,
+      Self = { Name, self() },
+      % Pass on the token to the next element
+      element(2, Next) ! { Self, [ Self | Visited ] },
+      doTarry(Name, Neighbours, Parent)
+  end.
 
 % vim: et sw=2
