@@ -16,7 +16,14 @@ readInput(Lines) ->
 main() ->
   Out = readInput([]),
   % Spawn the nodes from the output
-  spawnNodes(Out).
+  Nodes = spawnNodes(Out),
+  % Find the initial node from the first input line
+  Initial = lists:keyfind(hd(Out), 1, Nodes),
+  io:format("Initial node is ~p~n", [Initial]),
+  % Get the PID of the initial node
+  InitialPid = element(2, Initial),
+  % Send the first message!
+  InitialPid ! "Test".
 
 spawnNodes([Initiator | Tail]) ->
   % Tail is the list to build graph from, Initiator is the node to start Tarry with
@@ -33,7 +40,8 @@ spawnNodes([Initiator | Tail]) ->
   % Still need to do something with this
   [Pid ! NeighbourPids || {{_, Pid}, NeighbourPids} <- NeighbourIDs],
   % Need to work out how to handle that though
-  io:format("Initiating Tarry with ~p~n", [Initiator]).
+  io:format("Initiating Tarry with ~p~n", [Initiator]),
+  NodeIDs.
 
 getNeighbours({{Name, PID}, NeighboursForOne}, NodeIDs) ->
   % Function to get the PID for a node
